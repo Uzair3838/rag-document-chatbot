@@ -1,0 +1,16 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Environment variables and secrets
+.env
+
+# Local vector database
+vector_db/
+
+# Local PDF documents
+data/documents/*.pdf
+
+# Jupyter Notebook
+.ipynb_checkpoints/
