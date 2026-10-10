@@ -7,8 +7,19 @@ def answer_question(question):
     #retrieve relevent documents chunks
     retrieved_documents = retrieve_documents(
         query= question,
-        top_k= 3
+        top_k= 8
     )
+    
+    #temporary code to see the retrieved chunks
+    print("\n--- RETRIEVED CHUNKS ---")
+
+    for i, doc in enumerate(retrieved_documents, start=1):
+        print(f"\nChunk {i}")
+        print(f"Source: {doc['source']}")
+        print(f"Page: {doc['page']}")
+        print(f"Distance: {doc['distance']:.4f}")
+        print(f"Text:\n{doc['text']}")
+        print("-" * 50)
     
     #build context from retrieved chunks
     context = build_context(retrieved_documents=retrieved_documents)
@@ -37,27 +48,36 @@ def answer_question(question):
     #generate the final answer
     answer = generate_answer(prompt= prompt)
     
-    refernces = []
+    references = []
     
     for document in retrieved_documents:
         reference = f"{document['source']}, Page {document['page']}"
         
-        if reference not in refernces:
-            refernces.append(reference)
+        if reference not in references:
+            references.append(reference)
     
-    return answer, refernces
+    if "I don't know based on the provided documents." in answer:
+        references = []
+    
+    return answer, references
 
 
-question = "What are the company's main products and what are their prices?"
+question = "What products does NexaTech Solutions offer, and what does each product do?"
 
 answer, references = answer_question(question= question)
+
+print("\n" + "="*60)
+print(question)
+print("\n" + "="*60)
+
 
 print("\nAnswer:")
 print(answer)
 
-print("\nReference:")
+if references:
+    print("\nReference:")
 
-for reference in references:
-    print(f"- {reference}")    
+    for reference in references:
+        print(f"- {reference}")    
     
     

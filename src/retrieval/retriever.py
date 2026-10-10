@@ -14,9 +14,9 @@ def retrieve_documents(query, top_k = 5):
     
     results = collection.query(
         query_embeddings = query_embedding.tolist(),
-        n_results=top_k
-        
-    )
+        n_results=top_k,
+        include=["documents", "metadatas", "distances"]
+        )
     retrieved_documents = []
     
     for i , document in enumerate(results['documents'][0]):
@@ -25,7 +25,8 @@ def retrieve_documents(query, top_k = 5):
         retrieved_documents.append({
             "text": document,
             "source": metadata['source'],
-            "page": metadata['page']
+            "page": metadata['page'],
+            "distance": results["distances"][0][i]
         })
     
     return retrieved_documents
