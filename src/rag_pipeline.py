@@ -17,18 +17,7 @@ def answer_question(question):
         top_n= 5
     )
     
-    print("\n --- Top reranked chunks ---")
-    
-    for i, doc in enumerate(retrieved_documents, start=1):
-        print(f"\nRank: {i}")
-        print(f"Source: {doc['source']}")
-        print(f"Page: {doc['page']}")
-        print(f"Reranker Score: {doc['rerank_score']:.4f}")
-        print(f"Text: \n{doc['text'][:300]}")
-        print("_"*50)
-        
-       
-    
+   
     #build context from retrieved chunks
     context = build_context(retrieved_documents=retrieved_documents)
     
@@ -70,22 +59,18 @@ def answer_question(question):
     return answer, references
 
 
-question = "What products does NexaTech Solutions offer, and what does each product do?"
 
-answer, references = answer_question(question= question)
+if __name__ == "__main__":
+    question = "What products does NexaTech Solutions offer, and what does each product do?"
 
-print("\n" + "="*60)
-print(question)
-print("\n" + "="*60)
+    answer, references = answer_question(question=question)
 
-
-print("\nAnswer:")
-print(answer)
-
-if references:
-    print("\nReference:")
+    print("\n" + "=" * 60)
+    print(question)
+    print("\n" + "=" * 60)
+    print("\nAnswer:")
+    print(answer)
+    print("\nReferences:")
 
     for reference in references:
-        print(f"- {reference}")    
-    
-    
+        print(f"- {reference}")

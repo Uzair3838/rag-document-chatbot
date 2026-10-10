@@ -1,7 +1,7 @@
 import pymupdf
 from cleaner import clean_text
 from chunker import chunk_text
-
+from pathlib import Path
 
 
 
@@ -16,7 +16,7 @@ def process_pdf(pdf_path):
         cleaned_text = clean_text(raw_text)
 
         metadata = {
-            "source": pdf_path.split("/")[-1],
+            "source": Path(pdf_path).name,
             "page": page_number
         }
 
