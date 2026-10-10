@@ -1,25 +1,33 @@
 from retrieval.retriever import retrieve_documents
 from retrieval.context_builder import build_context
 from llm import generate_answer
+from retrieval.reranker import rerank_documents
+from pathlib import Path
 
 def answer_question(question):
     
-    #retrieve relevent documents chunks
-    retrieved_documents = retrieve_documents(
+    candidate_documents = retrieve_documents(
         query= question,
-        top_k= 8
+        top_k= 15
     )
     
-    #temporary code to see the retrieved chunks
-    print("\n--- RETRIEVED CHUNKS ---")
-
+    retrieved_documents = rerank_documents(
+        query= question,
+        documents= candidate_documents,
+        top_n= 5
+    )
+    
+    print("\n --- Top reranked chunks ---")
+    
     for i, doc in enumerate(retrieved_documents, start=1):
-        print(f"\nChunk {i}")
+        print(f"\nRank: {i}")
         print(f"Source: {doc['source']}")
         print(f"Page: {doc['page']}")
-        print(f"Distance: {doc['distance']:.4f}")
-        print(f"Text:\n{doc['text']}")
-        print("-" * 50)
+        print(f"Reranker Score: {doc['rerank_score']:.4f}")
+        print(f"Text: \n{doc['text'][:300]}")
+        print("_"*50)
+        
+       
     
     #build context from retrieved chunks
     context = build_context(retrieved_documents=retrieved_documents)
@@ -51,7 +59,7 @@ def answer_question(question):
     references = []
     
     for document in retrieved_documents:
-        reference = f"{document['source']}, Page {document['page']}"
+        reference = f"{Path(document['source']).name}, Page {document['page']}"
         
         if reference not in references:
             references.append(reference)
