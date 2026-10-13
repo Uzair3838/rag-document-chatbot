@@ -6,24 +6,28 @@ from pathlib import Path
 
 
 def process_pdf(pdf_path):
-    doc = pymupdf.open(pdf_path)
+    try:
+        doc = pymupdf.open(pdf_path)
+    except Exception as e:
+        raise ValueError(f"Invalid or corrupted PDF file: {e}")
 
     all_chunks = []
 
-    for page_number, page in enumerate(doc, start=1):
-        raw_text = page.get_text()
+    try:
+        for page_number, page in enumerate(doc, start=1):
+            raw_text = page.get_text()
 
-        cleaned_text = clean_text(raw_text)
+            cleaned_text = clean_text(raw_text)
 
-        metadata = {
-            "source": Path(pdf_path).name,
-            "page": page_number
-        }
+            metadata = {
+                "source": Path(pdf_path).name,
+                "page": page_number
+            }
 
-        page_chunks = chunk_text(cleaned_text, metadata)
+            page_chunks = chunk_text(cleaned_text, metadata)
 
-        all_chunks.extend(page_chunks)
-
-    doc.close()
+            all_chunks.extend(page_chunks)
+    finally:
+        doc.close()
 
     return all_chunks
