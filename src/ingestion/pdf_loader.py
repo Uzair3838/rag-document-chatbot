@@ -1,6 +1,6 @@
 import pymupdf
-from cleaner import clean_text
-from chunker import chunk_text
+from .cleaner import clean_text
+from .chunker import chunk_text
 from pathlib import Path
 
 

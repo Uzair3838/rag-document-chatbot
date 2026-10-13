@@ -19,7 +19,11 @@ for pdf_file in pdf_files:
     
     embeddings = create_embeddings(texts)
     
-    store_chunks(chunks = chunks, embeddings= embeddings)
+    store_chunks(
+        chunks = chunks,
+        embeddings= embeddings,
+        session_id= 'ingestion_test'
+        )
     
     total_chunks += len(chunks)
     

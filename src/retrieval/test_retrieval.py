@@ -4,6 +4,7 @@ question = "What are the monthly and annual prices of the Starter, Professional,
 
 results = retrieve_documents(
     query=question,
+    session_id="retrieval_test",
     top_k=5
 )
 

@@ -5,7 +5,11 @@ from src.retrieval.reranker import rerank_documents
 question = "What products does NexaTech Solutions offer, and what does each product do?"
 
 # Retrieve 15 candidate chunks from ChromaDB
-documents = retrieve_documents(query=question, top_k=15)
+documents = retrieve_documents(
+    query=question,
+    session_id="reranker_test",
+    top_k=15
+    )
 
 print(f"\nRetrieved {len(documents)} candidate chunks.")
 

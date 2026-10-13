@@ -1,27 +1,42 @@
-from retrieval.retriever import retrieve_documents
-from retrieval.context_builder import build_context
-from llm import generate_answer
-from retrieval.reranker import rerank_documents
+
 from pathlib import Path
 
-def answer_question(question):
-    
+from retrieval.retriever import retrieve_documents
+from retrieval.context_builder import build_context
+from retrieval.reranker import rerank_documents
+from llm import generate_answer
+
+
+def answer_question(question, session_id):
     candidate_documents = retrieve_documents(
-        query= question,
-        top_k= 15
+        query=question,
+        session_id=session_id,
+        top_k=15
     )
-    
+
+    if not candidate_documents:
+        return "I don't know based on the provided documents.", []
+
     retrieved_documents = rerank_documents(
-        query= question,
-        documents= candidate_documents,
-        top_n= 5
+        query=question,
+        documents=candidate_documents,
+        top_n=5
     )
-    
-   
-    #build context from retrieved chunks
-    context = build_context(retrieved_documents=retrieved_documents)
-    
-    #create the prompt for llm
+
+    # Keep only documents with positive reranking scores.
+    retrieved_documents = [
+        document
+        for document in retrieved_documents
+        if document["rerank_score"] > 0
+    ]
+
+    if not retrieved_documents:
+        return "I don't know based on the provided documents.", []
+
+    context = build_context(
+        retrieved_documents=retrieved_documents
+    )
+
     prompt = f"""
     You are a document question-answering assistant.
 
@@ -39,38 +54,22 @@ def answer_question(question):
     {question}
 
     Answer:
-    
     """
-    
-    #generate the final answer
-    answer = generate_answer(prompt= prompt)
-    
+
+    answer = generate_answer(prompt=prompt)
+
     references = []
-    
+
     for document in retrieved_documents:
-        reference = f"{Path(document['source']).name}, Page {document['page']}"
-        
+        reference = (
+            f"{Path(document['source']).name}, "
+            f"Page {document['page']}"
+        )
+
         if reference not in references:
             references.append(reference)
-    
+
     if "I don't know based on the provided documents." in answer:
         references = []
-    
+
     return answer, references
-
-
-
-if __name__ == "__main__":
-    question = "What products does NexaTech Solutions offer, and what does each product do?"
-
-    answer, references = answer_question(question=question)
-
-    print("\n" + "=" * 60)
-    print(question)
-    print("\n" + "=" * 60)
-    print("\nAnswer:")
-    print(answer)
-    print("\nReferences:")
-
-    for reference in references:
-        print(f"- {reference}")
