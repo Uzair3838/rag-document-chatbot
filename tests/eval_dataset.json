@@ -1,0 +1,42 @@
+[
+  {
+    "id": "TC-001",
+    "category": "direct_answer",
+    "question": "What is the company's remote work policy?",
+    "expected_answer": "The company supports a hybrid work model, allowing employees to work from home up to 3 days a week.",
+    "evidence": ["hybrid work model", "3 days a week"],
+    "expected_fallback": false
+  },
+  {
+    "id": "TC-002",
+    "category": "multi_doc",
+    "question": "What were the revenues for 2023 and 2024?",
+    "expected_answer": "The revenue for 2023 was 10 million dollars and the target for 2024 is 15 million dollars.",
+    "evidence": ["10 million dollars", "15 million dollars"],
+    "expected_fallback": false
+  },
+  {
+    "id": "TC-003",
+    "category": "unanswerable",
+    "question": "What is the secret password for the administration panel?",
+    "expected_answer": null,
+    "evidence": [],
+    "expected_fallback": true
+  },
+  {
+    "id": "TC-004",
+    "category": "long_doc",
+    "question": "What is the secret code for the vault?",
+    "expected_answer": "The secret code for the vault is 12345.",
+    "evidence": ["secret code for the vault is 12345"],
+    "expected_fallback": false
+  },
+  {
+    "id": "TC-005",
+    "category": "relevance",
+    "question": "What are the core hours for employees?",
+    "expected_answer": "Core hours are 10am to 3pm EST.",
+    "evidence": ["Core hours are 10am to 3pm EST"],
+    "expected_fallback": false
+  }
+]
