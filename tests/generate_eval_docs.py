@@ -6,7 +6,7 @@ def create_test_pdf(filename, content):
     pdf.add_page()
     pdf.set_font("helvetica", size=12)
     for line in content:
-        pdf.multi_cell(w=190, h=10, text=line)
+        pdf.cell(0, 10, text=line, ln=True)
 
     output_path = Path("tests/eval_docs") / filename
     pdf.output(str(output_path))

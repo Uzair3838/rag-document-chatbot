@@ -91,9 +91,11 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-### 4. Start Ollama
+### 4. Configure and Start Ollama
 
-Install and sign in to [Ollama](https://ollama.com/) and ensure its service is running. This project uses the `gpt-oss:20b-cloud` model, which requires the appropriate Ollama Cloud access.
+1. Install and sign in to [Ollama](https://ollama.com/).
+2. Ensure the Ollama service is running in the background.
+3. This project uses the `gpt-oss:20b-cloud` model. Ensure you have the appropriate Ollama Cloud access to pull and run this model.
 
 ### 5. Run the Application
 
@@ -103,11 +105,33 @@ Start the Streamlit interface from the project root:
 streamlit run app.py
 ```
 
+## Usage
+
+1. **Upload Documents:** Use the sidebar to upload one or more PDF files. Click "Process Uploaded PDFs" to extract and index the text.
+2. **Ask Questions:** Enter your question in the chat input. The chatbot will retrieve relevant passages and generate a grounded answer.
+3. **View Citations:** Answers include source references (document name and page number) to help you verify the information.
+4. **Clear Session:** Use the "Clear Documents & Chat" button in the sidebar to wipe the current session's indexed documents and reset the conversation.
+
+## Evaluation
+
+You can verify the RAG pipeline's performance using the built-in evaluation suite:
+
+```bash
+python tests/run_eval.py
+```
+
+**What it tests:**
+- **Retrieval:** Checks if the system retrieves the correct evidence chunks for a set of test questions.
+- **Answer Grounding:** Uses keyword-based heuristics to verify if the generated answer aligns with the expected factual response.
+
+*Note: Evaluation results may vary based on the LLM's current state and environment. On some Windows systems, you may encounter error 1455 during model loading; this is typically related to available paging-file size.*
+
 ## Current Limitations
 
-- Vector database is ephemeral (in-memory).
-- Answer quality depends on the source documents, retrieval results, and language model.
-- The project is under active development.
+- **Ephemeral Storage:** The vector database is in-memory; all indexed documents are lost when the server process restarts.
+- **Session Isolation:** Isolation is based on browser session IDs and is not a substitute for production-grade user authentication.
+- **Citations:** Source references identify the origin of the retrieved text but are not independently verified to support every specific claim in the generated answer.
+- **Evaluation:** The evaluation suite uses basic keyword-overlap heuristics and may not capture all nuances of answer correctness.
 
 ## Future Improvements
 
