@@ -4,23 +4,35 @@ A Retrieval-Augmented Generation (RAG) chatbot that answers questions using info
 
 ## Features
 
-- PDF text extraction using PyMuPDF
-- Text cleaning and chunking with overlap
-- Semantic embeddings using Sentence Transformers
-- Vector storage and similarity search with ChromaDB
-- LLM-powered answers using Ollama and LangChain
-- Source references to help trace answers back to PDF documents
-- Designed to acknowledge when the provided documents do not contain enough information
+- **Web Interface:** A Streamlit-based UI for seamless PDF uploading and chatting.
+- PDF text extraction using PyMuPDF.
+- Text cleaning and chunking with overlap.
+- Semantic embeddings using Sentence Transformers.
+- Vector storage and similarity search with ChromaDB.
+- LLM-powered answers using Ollama and LangChain.
+- Source references to help trace answers back to PDF documents.
+- Designed to acknowledge when the provided documents do not contain enough information.
 
 ## Architecture
 
 1. **PDF ingestion:** Extract text and page metadata from PDF files.
 2. **Text preprocessing:** Clean extracted text and split it into overlapping chunks.
 3. **Embedding generation:** Convert text chunks into numerical vectors.
-4. **Vector storage:** Store chunks, metadata, and embeddings in ChromaDB.
+4. **Vector storage:** Store chunks, metadata, and embeddings in ChromaDB using an `EphemeralClient` for in-memory storage.
 5. **Retrieval:** Find relevant chunks for a user's question.
 6. **Answer generation:** Pass the retrieved context to an LLM to generate a grounded answer.
 7. **Source references:** Display the source document and page number.
+
+## Session Lifecycle & Document Isolation
+
+To ensure privacy and prevent data leakage between users, the application implements strict session isolation:
+
+- **Unique Session IDs:** Every browser session is assigned a unique session ID.
+- **Isolated Collections:** Each session has its own dedicated document collection in the vector database. Documents uploaded in one tab are not accessible to other tabs or users.
+- **Ephemeral Storage:** Embeddings are stored in-memory. This means that **all indexed documents are lost when the server process restarts**.
+- **Session Clearing:** The "Clear Documents & Chat" feature deletes the current session's vector collection and resets the chat history without affecting other active sessions.
+
+**Note:** In-memory storage is used for temporary convenience. It is not a guarantee of secure forensic deletion nor a substitute for production-grade multi-tenant isolation.
 
 ## Tech Stack
 
@@ -48,7 +60,7 @@ rag-document-chatbot/
 │   ├── retrieval/
 │   │   ├── retriever.py
 │   │   ├── context_builder.py
-│   │   └── test_retrieval.py
+│   │   └── test_retrieval.test.py
 │   ├── llm.py
 │   └── rag_pipeline.py
 ├── requirements.txt
@@ -79,43 +91,26 @@ python -m venv .venv
 python -m pip install -r requirements.txt
 ```
 
-### 4. Add PDF documents
-
-Create a `data/documents/` directory in the project root and place your PDF files inside it.
-
-### 5. Start Ollama
+### 4. Start Ollama
 
 Install and sign in to [Ollama](https://ollama.com/) and ensure its service is running. This project uses the `gpt-oss:20b-cloud` model, which requires the appropriate Ollama Cloud access.
 
-### 6. Ingest the documents
+### 5. Run the Application
 
-Run the ingestion script from the project root:
+Start the Streamlit interface from the project root:
 
-```powershell
-python src/ingestion/ingest_all.py
+```bash
+streamlit run app.py
 ```
-
-### 7. Ask questions
-
-Run the RAG pipeline:
-
-```powershell
-python src/rag_pipeline.py
-```
-
-The current pipeline uses the question defined in the source code. Update that question to test other queries.
 
 ## Current Limitations
 
-- The current interface is command-line based.
-- PDF documents must be ingested before they can be searched.
-- The vector database is stored locally and is not included in the repository.
+- Vector database is ephemeral (in-memory).
 - Answer quality depends on the source documents, retrieval results, and language model.
 - The project is under active development.
 
 ## Future Improvements
 
-- Build a PDF upload and chat interface with Streamlit.
 - Add hybrid search and reranking.
 - Support metadata filters and multiple documents.
 - Add automated evaluation for retrieval accuracy and answer correctness.

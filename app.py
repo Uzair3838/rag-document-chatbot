@@ -241,6 +241,7 @@ with st.sidebar:
     )
 
     st.caption("Your private document assistant")
+    st.caption("Documents are stored in temporary in-memory storage and are lost when the server restarts.")
 
     st.markdown("---")
 
