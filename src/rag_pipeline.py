@@ -66,15 +66,18 @@ def answer_question(question, session_id):
     answer = generate_answer(prompt=prompt)
 
     references = []
+    seen_sources = set()
 
     for document in retrieved_documents:
-        reference = (
-            f"{Path(document['source']).name}, "
-            f"Page {document['page']}"
-        )
+        # Normalize path to ensure cross-platform consistency (handles / and \\)
+        source_path = document['source'].replace('\\', '/')
+        filename = Path(source_path).name
+        page = document['page']
+        source_key = (filename, page)
 
-        if reference not in references:
-            references.append(reference)
+        if source_key not in seen_sources:
+            references.append(f"{filename}, Page {page}")
+            seen_sources.add(source_key)
 
     if "I don't know based on the provided documents." in answer:
         references = []
